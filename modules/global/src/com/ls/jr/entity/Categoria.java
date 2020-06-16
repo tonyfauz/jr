@@ -23,9 +23,9 @@ public class Categoria extends BaseLongIdEntity implements HasUuid {
     @Column(name = "NOME")
     protected String nome;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @Lookup(type = LookupType.DROPDOWN, actions = {})
     @OnDeleteInverse(DeletePolicy.DENY)
-    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PADRE_ID")
     protected Categoria padre;
 

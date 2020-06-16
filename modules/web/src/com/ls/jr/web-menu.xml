@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
     <menu id="application-jr" insertBefore="administration">
+        <item screen="jr_Report.browse"/>
+        <item screen="jr_Categoria.browse"/>
+        <item screen="jr_CategoryScreen"/>
     </menu>
 </menu-config>
