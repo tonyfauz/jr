@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
 
+    <view entity="jr_Categoria" name="categoria-view" extends="_local">
+        <property name="padre" view="_minimal">
+            <property name="nome"/>
+        </property>
+    </view>
+    <view entity="jr_Report" name="report-view" extends="_local">
+        <property name="categoria" view="_minimal">
+            <property name="nome"/>
+            <property name="padre" view="_minimal"/>
+        </property>
+        <property name="file" view="_minimal"/>
+    </view>
 </views>

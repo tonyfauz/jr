@@ -37,11 +37,22 @@ public class Report extends StandardEntity {
     protected LocalDateTime validoFino;
 
     @CaseConversion(type = ConversionType.LOWER)
-    @Column(name = "ALIAS")
+    @Column(name = "ALIAS", unique = true)
     protected String alias;
+
+    @Column(name = "STORE")
+    protected String store;
 
     @Column(name = "PARAMS", length = 500)
     protected String params;
+
+    public String getStore() {
+        return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
+    }
 
     public String getParams() {
         return params;

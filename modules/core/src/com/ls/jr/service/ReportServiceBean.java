@@ -1,6 +1,7 @@
 package com.ls.jr.service;
 
 import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.ls.jr.database.ReportDatabaseAccess;
 import com.ls.jr.entity.Report;
@@ -30,14 +31,14 @@ public class ReportServiceBean implements ReportService {
 
 
     @Override
-    public byte[] printReportFromAlias(String alias,HashMap<String,Object> params) throws PrintFailedException {
+    public byte[] printReportFromAlias(String alias,HashMap<String,Object> params) throws PrintFailedException, FileStorageException {
         Report report = reportDatabaseAccess.findReportFromAlias(alias);
         return printReport(report,params);
     }
 
 
     @Override
-    public byte[] printReport(Report report, HashMap<String,Object> params) throws PrintFailedException {
+    public byte[] printReport(Report report, HashMap<String,Object> params) throws PrintFailedException, FileStorageException {
 
         if(report.getTipo().equals(TipoExport.PDF))
              printerContext.setReportPrinter(new PdfPrinter());

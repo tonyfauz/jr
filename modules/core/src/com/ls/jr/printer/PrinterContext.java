@@ -1,5 +1,6 @@
 package com.ls.jr.printer;
 
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.ls.jr.entity.Report;
 import com.ls.jr.exceptions.report.PrintFailedException;
 import javafx.print.Printer;
@@ -19,7 +20,7 @@ public class PrinterContext {
     public void setReportPrinter(ReportPrinter reportPrinter) {
         this.reportPrinter = reportPrinter;
     }
-    public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException{
+    public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException, FileStorageException {
         if(reportPrinter!=null)
             return reportPrinter.printReport(report,params);
         else

@@ -94,6 +94,7 @@ configure(coreModule) {
         compile 'net.sf.jasperreports:jasperreports-functions:6.12.2'
         compile 'net.sf.jasperreports:jasperreports-fonts:6.12.2'
         compile 'net.sf.jasperreports:jasperreports-metadata:6.12.2'
+        compile 'com.lowagie:itext:2.1.7'
     }
 
     task cleanConf(description: 'Cleans up conf directory', type: Delete) {
