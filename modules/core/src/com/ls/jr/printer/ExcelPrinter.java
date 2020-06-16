@@ -31,7 +31,7 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
     @Override
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException {
 
-        Persistence persistence  = AppBeans.get(Persistence.class);
+
         byte[] bytes = null;
         java.util.Map parameters = new java.util.HashMap();
 
@@ -42,9 +42,8 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
         });
 
         try {
-            
-            Transaction transaction = persistence.createTransaction();
-            Connection c = persistence.getEntityManager().getConnection();
+
+            Connection c = getDbConnection(report.getStore());
 
             if(c != null ) {
 
@@ -55,7 +54,6 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
             }else
                 throw  new PrintFailedException("Connessione al db non riuscita");
 
-            transaction.close();
         } catch (Exception e) {
             log.debug(e.getMessage(),e);
             throw  new PrintFailedException("Errore durante la stampa del report",e);
