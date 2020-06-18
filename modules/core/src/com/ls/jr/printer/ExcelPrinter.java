@@ -1,6 +1,8 @@
 package com.ls.jr.printer;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -29,26 +31,26 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
     @Override
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException {
 
-        EntityManager em  = AppBeans.get(EntityManager.class);
 
         byte[] bytes = null;
         java.util.Map parameters = new java.util.HashMap();
 
         parameters.put(JRParameter.REPORT_LOCALE, locale);
         parameters.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
-
         params.forEach( (key,value) ->{
             parameters.put(key,value);
         });
 
         try {
-            Connection c = em.getConnection();
+
+            Connection c = getDbConnection(report.getStore());
 
             if(c != null ) {
 
                 JasperReport jasperReport = loadJasperReport(report.getFile());
                 JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters,c);
                 bytes = exportXlsxToByteArray(jasperPrint);
+
             }else
                 throw  new PrintFailedException("Connessione al db non riuscita");
 

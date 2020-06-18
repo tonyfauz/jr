@@ -1,16 +1,16 @@
 package com.ls.jr.printer;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.global.AppBeans;
+
 import com.ls.jr.entity.Report;
 import com.ls.jr.exceptions.report.PrintFailedException;
+
 import net.sf.jasperreports.engine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.Locale;
+
 
 public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
 
@@ -19,9 +19,6 @@ public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
 
     @Override
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException {
-
-
-        EntityManager em = AppBeans.get(EntityManager.class);
 
         byte[] bytes = null;
         java.util.Map parameters = new java.util.HashMap();
@@ -35,13 +32,14 @@ public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
 
         try {
 
-            Connection c = em.getConnection();
+            Connection c = getDbConnection(report.getStore());
 
             if (c != null) {
 
                 JasperReport jasperReport = loadJasperReport(report.getFile());
                 JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters, c);
                 bytes = exportPdfToByteArray(jasperPrint);
+
 
             } else
                 throw new PrintFailedException("Connessione al db non riuscita");
