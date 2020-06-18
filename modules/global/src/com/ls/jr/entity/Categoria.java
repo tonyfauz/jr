@@ -1,5 +1,6 @@
 package com.ls.jr.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
@@ -11,6 +12,7 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 import javax.persistence.*;
 import java.util.UUID;
 
+@NamePattern("%s|nome")
 @Table(name = "JR_CATEGORIA")
 @Entity(name = "jr_Categoria")
 public class Categoria extends BaseLongIdEntity implements HasUuid {

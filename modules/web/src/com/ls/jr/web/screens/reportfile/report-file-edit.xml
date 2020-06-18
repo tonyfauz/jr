@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://editorCaption"
+        focusComponent="form"
+        messagesPack="com.ls.jr.web.screens.reportfile">
+    <data>
+        <instance id="reportFileDc"
+                  class="com.ls.jr.entity.ReportFile"
+                  view="reportFile-view">
+            <loader/>
+        </instance>
+        <collection id="reportsDc" class="com.ls.jr.entity.Report" view="_minimal">
+            <loader id="reportsLc">
+                <query>
+                    <![CDATA[select e from jr_Report e]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="filesDc" class="com.haulmont.cuba.core.entity.FileDescriptor" view="_minimal">
+            <loader id="filesLc">
+                <query>
+                    <![CDATA[select e from sys$FileDescriptor e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="reportFileDc">
+            <column width="250px">
+                <lookupPickerField id="reportField" optionsContainer="reportsDc" property="report"/>
+                <upload id="fileField" fileStoragePutMode="IMMEDIATE" optionsContainer="filesDc" property="file"
+                        showFileName="true"/>
+                <checkBox id="subReportField" property="subReport"/>
+            </column>
+        </form>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
+    </layout>
+</window>

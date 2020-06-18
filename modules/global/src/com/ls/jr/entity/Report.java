@@ -1,6 +1,5 @@
 package com.ls.jr.entity;
 
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -26,18 +25,14 @@ public class Report extends StandardEntity {
     @Column(name = "TIPO")
     protected Integer tipo;
 
-    @Lookup(type = LookupType.DROPDOWN, actions = {})
-    @OnDeleteInverse(DeletePolicy.DENY)
-    @OnDelete(DeletePolicy.UNLINK)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FILE_ID")
-    protected FileDescriptor file;
-
     @Column(name = "VALIDO_FINO")
     protected LocalDateTime validoFino;
 
+    @Column(name = "VALIDO_DA")
+    protected LocalDateTime validoDa;
+
     @CaseConversion(type = ConversionType.LOWER)
-    @Column(name = "ALIAS", unique = true)
+    @Column(name = "ALIAS")
     protected String alias;
 
     @Column(name = "STORE")
@@ -45,6 +40,14 @@ public class Report extends StandardEntity {
 
     @Column(name = "PARAMS", length = 500)
     protected String params;
+
+    public LocalDateTime getValidoDa() {
+        return validoDa;
+    }
+
+    public void setValidoDa(LocalDateTime validoDa) {
+        this.validoDa = validoDa;
+    }
 
     public String getStore() {
         return store;
@@ -76,14 +79,6 @@ public class Report extends StandardEntity {
 
     public void setValidoFino(LocalDateTime validoFino) {
         this.validoFino = validoFino;
-    }
-
-    public FileDescriptor getFile() {
-        return file;
-    }
-
-    public void setFile(FileDescriptor file) {
-        this.file = file;
     }
 
     public TipoExport getTipo() {

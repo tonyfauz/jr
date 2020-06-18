@@ -4,5 +4,6 @@
 
         <class>com.ls.jr.entity.Report</class>
         <class>com.ls.jr.entity.Categoria</class>
+        <class>com.ls.jr.entity.ReportFile</class>
     </persistence-unit>
 </persistence>

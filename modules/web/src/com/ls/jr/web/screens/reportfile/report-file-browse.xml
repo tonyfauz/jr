@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://browseCaption"
+        focusComponent="reportFilesTable"
+        messagesPack="com.ls.jr.web.screens.reportfile">
+    <data readOnly="true">
+        <collection id="reportFilesDc"
+                    class="com.ls.jr.entity.ReportFile"
+                    view="reportFile-view">
+            <loader id="reportFilesDl">
+                <query>
+                    <![CDATA[select e from jr_ReportFile e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="reportFilesTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="reportFilesTable"
+                dataLoader="reportFilesDl">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="reportFilesTable"
+                    width="100%"
+                    dataContainer="reportFilesDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="report"/>
+                <column id="file"/>
+                <column id="subReport"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn" action="reportFilesTable.create"/>
+                <button id="editBtn" action="reportFilesTable.edit"/>
+                <button id="removeBtn" action="reportFilesTable.remove"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>
