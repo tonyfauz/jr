@@ -36,7 +36,6 @@
                 <column id="nome"/>
                 <column id="categoria"/>
                 <column id="tipo"/>
-                <column id="file"/>
                 <column id="validoDa"/>
                 <column id="validoFino"/>
                 <column id="alias"/>
@@ -48,7 +47,7 @@
                           alwaysVisible="true">
                 <button id="createBtn" action="reportsTable.create"/>
                 <button id="editBtn" action="reportsTable.edit"/>
-                <button id="removeBtn" action="reportsTable.remove"/>
+                <button id="removeBtn" caption="Elimina" invoke="onRemoveBtnClick" icon="REMOVE_ACTION" enable="false"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

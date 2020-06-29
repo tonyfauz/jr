@@ -9,7 +9,7 @@
                   view="reportFile-view">
             <loader/>
         </instance>
-        <collection id="reportsDc" class="com.ls.jr.entity.Report" view="_minimal">
+        <collection id="reportsDc" class="com.ls.jr.entity.Report" view="report-view">
             <loader id="reportsLc">
                 <query>
                     <![CDATA[select e from jr_Report e]]>
@@ -27,16 +27,36 @@
     <dialogMode height="600"
                 width="800"/>
     <layout expand="editActions" spacing="true">
-        <form id="form" dataContainer="reportFileDc">
-            <column width="250px">
-                <lookupPickerField id="reportField" optionsContainer="reportsDc" property="report"/>
-                <upload id="fileField" fileStoragePutMode="IMMEDIATE" optionsContainer="filesDc" property="file"
-                        showFileName="true"/>
-                <checkBox id="subReportField" property="subReport"/>
+        <form id="form" dataContainer="reportFileDc" width="100%">
+            <column>
+                <hbox spacing="true" align="MIDDLE_LEFT">
+                    <label value="Report"/>
+                    <label id="focusedReport" dataContainer="reportFileDc" property="report.nome"/>
+                </hbox>
+                <hbox spacing="true">
+                    <checkBox id="subReportField" property="subReport" caption="Sub Report"
+                              dataContainer="reportFileDc"/>
+                </hbox>
+                <!--<lookupField id="reportField" optionsContainer="reportsDc" property="report"
+                             captionProperty="nome"/>-->
+                <vbox height="150px" spacing="true" stylename="dropzone-container" id="dropZone"
+                      margin="false,true,true,false" width="98%">
+                    <label stylename="dropzone-description"
+                           value="Trascina il file"
+                           align="MIDDLE_CENTER"/>
+                </vbox>
+                <vbox spacing="true" margin="true,false,false,false">
+                    <upload id="fileField" fileStoragePutMode="IMMEDIATE" property="file" required="true" requiredMessage="Caricare il file!"
+                            showFileName="true" dropZone="dropZone" showClearButton="true"
+                            uploadButtonCaption="Carica File" permittedExtensions=".jrxml"
+                            dataContainer="reportFileDc"/>
+                    <label value="Clicca per caricare il file o trascina il file da caricare."/>
+                </vbox>
+
             </column>
         </form>
         <hbox id="editActions" spacing="true">
-            <button action="windowCommitAndClose"/>
+            <button id="btnSaveFile" caption="Salva file" stylename="primary" invoke="onBtnSaveFileClick"/>
             <button action="windowClose"/>
         </hbox>
     </layout>

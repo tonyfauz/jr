@@ -12,6 +12,7 @@ import com.ls.jr.entity.Categoria;
 import com.ls.jr.exceptions.manager.DeleteCategoriaException;
 import com.ls.jr.exceptions.manager.SaveCategoriaException;
 import com.ls.jr.service.ReportManagerService;
+import com.ls.jr.web.events.AutoUpdateCategoryEvent;
 
 import javax.inject.Inject;
 
@@ -37,6 +38,8 @@ public class CategoryScreen extends Screen {
     @Inject
     private Button saveBtn;
     @Inject
+    private Button saveAndCloseBtn;
+    @Inject
     private Notifications notifications;
     @Inject
     private Metadata metadata;
@@ -44,13 +47,39 @@ public class CategoryScreen extends Screen {
     private Dialogs dialogs;
     @Inject
     private ReportManagerService reportManagerService;
+    @Inject
+    private Events events;
 
     public void checkCampi() {
         if ((padreField.getValue()!=null && nomeField.getValue()!=null) || (isPadre.isChecked() && nomeField.getValue()!=null)) {
-            saveBtn.setEnabled(true);
+            enableBtn(true);
         } else {
-            saveBtn.setEnabled(false);
+            enableBtn(false);
         }
+    }
+
+    public void eraseField() {
+        isPadre.setValue(false);
+        categoriaDc.setItem(null);
+        padreField.setValue("");
+    }
+    public void visible(Boolean setBoolean) {
+        actionsPane.setVisible(setBoolean);
+    }
+
+    public void enable(Boolean setBoolean) {
+        isPadre.setEnabled(setBoolean);
+        nomeField.setEnabled(setBoolean);
+    }
+
+    public void enableBtn(Boolean setBoolean) {
+        saveBtn.setEnabled(setBoolean);
+        saveAndCloseBtn.setEnabled(setBoolean);
+    }
+
+    public void required(Boolean setBoolean) {
+        nomeField.setRequired(setBoolean);
+        nomeField.setRequiredMessage("Campo Obbligatorio!");
     }
 
     @Subscribe
@@ -64,8 +93,7 @@ public class CategoryScreen extends Screen {
             if(categoriaDc.getItemOrNull() != null && nomeField.isEnabled()) {
                 Categoria cat = categoryTree.getSingleSelected();
                 if (cat != null) {
-                    isPadre.setEnabled(true);
-                    nomeField.setEnabled(true);
+                    enable(true);
                     String catPadre = cat.getNome();
                     padreField.setValue(catPadre);
                     categoriaDc.getItem().setPadre(cat);
@@ -102,11 +130,9 @@ public class CategoryScreen extends Screen {
 
     public void onCreateBtnClick() {
         categoriaDc.setItem(metadata.create(Categoria.class));
-        isPadre.setEnabled(true);
-        nomeField.setEnabled(true);
-        nomeField.setRequired(true);
-        nomeField.setRequiredMessage("Campo Obbligatorio!");
-        actionsPane.setVisible(true);
+        enable(true);
+        required(true);
+        visible(true);
         if (padreField.getValue()==null && !isPadre.isChecked()) {
             notifications.create()
                 .withType(Notifications.NotificationType.WARNING)
@@ -114,7 +140,7 @@ public class CategoryScreen extends Screen {
                 .withDescription("Selezionare almeno una categoria o identificare la nuova come categoria padre.")
                 .show();
         } else {
-            saveBtn.setEnabled(false);
+            enableBtn(false);
         }
 
         Categoria cat = categoryTree.getSingleSelected();
@@ -128,18 +154,35 @@ public class CategoryScreen extends Screen {
     public void onRemoveBtnClick() {
         Categoria catToRemove = categoryTree.getSingleSelected();
         if(catToRemove != null) {
-                try {
-                    reportManagerService.deleteCategoria(catToRemove);
-                } catch (DeleteCategoriaException pkException){
-                    notifications.create()
-                        .withType(Notifications.NotificationType.ERROR)
-                        .withCaption("ATTENZIONE")
-                        .withDescription(pkException.getMessage())
-                        .show();
-                }
-            categoriasDl.load();
+            dialogs.createOptionDialog()
+                    .withCaption("Conferma la tua scelta")
+                    .withMessage("Sei sicuro di voler eliminare la categoria selezionata?")
+                    .withActions(
+                            new DialogAction(DialogAction.Type.YES, Action.Status.PRIMARY).withCaption("SI").withHandler(e -> {
+                                try {
+                                    reportManagerService.deleteCategoria(catToRemove);
+                                } catch (DeleteCategoriaException pkException){
+                                    notifications.create()
+                                            .withType(Notifications.NotificationType.ERROR)
+                                            .withCaption("ATTENZIONE")
+                                            .withDescription(pkException.getMessage())
+                                            .show();
+                                }
+                                categoriasDl.load();
+                            }),
+                            new DialogAction(DialogAction.Type.NO),
+                            new DialogAction(DialogAction.Type.CLOSE).withCaption("LogOut").withHandler(e -> {
+                                App.getInstance().logout();
+                            })
+                    )
+                    .show();
+        } else {
+            notifications.create()
+                .withType(Notifications.NotificationType.WARNING)
+                .withCaption("ATTENZIONE")
+                .withDescription("Selezionare la categoria da eliminare.")
+                .show();
         }
-
     }
 
     public void onSaveBtnClick() {
@@ -147,19 +190,40 @@ public class CategoryScreen extends Screen {
         if (myCat != null) {
             try {
                 reportManagerService.saveCategoria(myCat);
-                isPadre.setValue(false);
-                categoriaDc.setItem(null);
-                padreField.setValue("");
-                actionsPane.setVisible(false);
-                isPadre.setEnabled(false);
-                nomeField.setEnabled(false);
-                nomeField.setRequired(false);
+                eraseField();
+                visible(false);
+                enable(false);
+                required(false);
+                AutoUpdateCategoryEvent event = new AutoUpdateCategoryEvent(this, myCat);
+                events.publish(event);
             } catch (SaveCategoriaException saveException) {
                 notifications.create()
                     .withType(Notifications.NotificationType.ERROR)
                     .withCaption("ATTENZIONE")
                     .withDescription(saveException.getMessage())
                     .show();
+            }
+        }
+        categoriasDl.load();
+    }
+    public void onSaveAndCloseBtnClick() {
+        Categoria myCat = categoriaDc.getItem();
+        if (myCat != null) {
+            try {
+                reportManagerService.saveCategoria(myCat);
+                eraseField();
+                visible(false);
+                enable(false);
+                required(false);
+                AutoUpdateCategoryEvent event = new AutoUpdateCategoryEvent(this, myCat);
+                events.publish(event);
+                close(WINDOW_DISCARD_AND_CLOSE_ACTION);
+            } catch (SaveCategoriaException saveException) {
+                notifications.create()
+                        .withType(Notifications.NotificationType.ERROR)
+                        .withCaption("ATTENZIONE")
+                        .withDescription(saveException.getMessage())
+                        .show();
             }
         }
         categoriasDl.load();
@@ -180,4 +244,6 @@ public class CategoryScreen extends Screen {
             )
             .show();
     }
+
+
 }

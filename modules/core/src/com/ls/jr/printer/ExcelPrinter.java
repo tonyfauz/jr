@@ -47,9 +47,9 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
 
             if(c != null ) {
 
-                JasperReport jasperReport = loadJasperReport(report.getFile());
+                /*JasperReport jasperReport = loadJasperReport(report.getFile());
                 JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters,c);
-                bytes = exportXlsxToByteArray(jasperPrint);
+                bytes = exportXlsxToByteArray(jasperPrint);*/
 
             }else
                 throw  new PrintFailedException("Connessione al db non riuscita");

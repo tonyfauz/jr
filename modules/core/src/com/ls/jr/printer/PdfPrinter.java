@@ -36,9 +36,9 @@ public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
 
             if (c != null) {
 
-                JasperReport jasperReport = loadJasperReport(report.getFile());
+                /*JasperReport jasperReport = loadJasperReport(report.getFile());
                 JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters, c);
-                bytes = exportPdfToByteArray(jasperPrint);
+                bytes = exportPdfToByteArray(jasperPrint);*/
 
 
             } else
