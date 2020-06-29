@@ -9,4 +9,7 @@ public class SaveReportException extends Exception {
     public SaveReportException(String message, Throwable cause) {
         super(message, cause);
     }
+    public SaveReportException(String message) {
+        super(message);
+    }
 }

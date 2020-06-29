@@ -2,6 +2,10 @@
 create table JR_CATEGORIA (
     ID bigint,
     UUID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
     --
     NOME varchar(255),
     PADRE_ID bigint,

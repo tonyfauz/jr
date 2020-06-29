@@ -9,12 +9,11 @@
         <property name="categoria" view="_minimal">
             <property name="padre" view="_local"/>
         </property>
-        <property name="files" fetch="AUTO" view="_local"/>
     </view>
     <view entity="jr_ReportFile" name="reportFile-view" extends="_local">
         <property name="report" view="_local">
             <property name="categoria" view="_minimal"/>
         </property>
-        <property name="file" view="_minimal"/>
+        <property name="file" view="_local"/>
     </view>
 </views>

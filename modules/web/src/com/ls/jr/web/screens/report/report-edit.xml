@@ -28,24 +28,35 @@
                 width="800"/>
     <layout expand="editActions" spacing="true">
         <form id="form" dataContainer="reportDc">
-            <column width="250px">
-                <textField id="nomeField" property="nome"/>
-                <lookupPickerField id="categoriaField" optionsContainer="categoriasDc" property="categoria"/>
-                <lookupField id="tipoField" property="tipo"/>
-                <upload id="fileField" fileStoragePutMode="IMMEDIATE" property="file" showFileName="true"/>
+            <column>
+                <textField id="nomeField" property="nome" align="MIDDLE_LEFT" required="true"
+                           requiredMessage="Campo Obbligatorio!"/>
+                <lookupField id="categoriaField" optionsContainer="categoriasDc" property="categoria" required="true"
+                             requiredMessage="Campo Obbligatorio!"/>
+                <lookupField id="tipoField" property="tipo" required="true" requiredMessage="Campo Obbligatorio!"/>
                 <dateField id="validoDaField" property="validoDa"/>
-                <dateField id="validoFinoField" property="validoFino"/>
-                <textField id="storeField" property="store"/>
-                <textField id="paramsField" property="params"/>
+                <textArea id="paramsField" property="params"/>
+                <vbox spacing="true" caption="         ">
+                    <label value="N.B. Inserire i parametri  separati dal &quot; ; &quot;."/>
+                </vbox>
             </column>
             <column>
-                <textField id="aliasField" property="alias"/>
-                <button/>
+                <textField id="aliasField" property="alias" align="MIDDLE_LEFT" required="true"
+                           requiredMessage="Campo Obbligatorio!"/>
+                <vbox spacing="true" caption="         ">
+                    <button id="btnCreateCategory" caption="Nuova categoria" invoke="onBtnCreateCategoryClick"/>
+                </vbox>
+                <textField id="storeField" property="store"/>
+                <dateField id="validoFinoField" property="validoFino"/>
             </column>
         </form>
         <hbox id="editActions" spacing="true">
-            <button action="windowCommitAndClose"/>
+            <button id="saveAction" action="windowCommit" stylename="primary" icon="SAVE"/>
             <button action="windowClose"/>
         </hbox>
+        <vbox spacing="true">
+            <button id="btnUploadFile" caption="Associa File" invoke="onBtnUploadFileClick" visible="false"
+                    stylename="friendly"/>
+        </vbox>
     </layout>
 </window>

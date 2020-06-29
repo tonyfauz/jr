@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
-        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
         caption="msg://browseCaption"
         focusComponent="reportFilesTable"
         messagesPack="com.ls.jr.web.screens.reportfile">
@@ -33,16 +32,17 @@
                 <action id="remove" type="remove"/>
             </actions>
             <columns>
-                <column id="report"/>
-                <column id="file"/>
+                <!--<column id="report.nome"/>-->
+                <column id="file.name"/>
                 <column id="subReport"/>
             </columns>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn" action="reportFilesTable.create"/>
-                <button id="editBtn" action="reportFilesTable.edit"/>
-                <button id="removeBtn" action="reportFilesTable.remove"/>
+                <button id="createBtn" invoke="onCreateBtnClick" caption="Create" stylename="primary"
+                        icon="CREATE_ACTION"/>
+                <button id="editBtn" invoke="onEditBtnClick" caption="Edit" icon="EDIT_ACTION" enable="false"/>
+                <button id="removeBtn" invoke="onRemoveBtnClick" caption="Remove" icon="REMOVE_ACTION" enable="false"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

@@ -16,16 +16,16 @@ public class ReportFile extends StandardEntity {
     private static final long serialVersionUID = 1531592115836344967L;
 
     @Lookup(type = LookupType.DROPDOWN, actions = {})
-    @OnDeleteInverse(DeletePolicy.DENY)
+    @OnDeleteInverse(DeletePolicy.UNLINK)
     @OnDelete(DeletePolicy.UNLINK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORT_ID")
     protected Report report;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @Lookup(type = LookupType.DROPDOWN, actions = {})
-    @OnDeleteInverse(DeletePolicy.DENY)
-    @OnDelete(DeletePolicy.UNLINK)
+    @OnDeleteInverse(DeletePolicy.CASCADE)
+    @OnDelete(DeletePolicy.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FILE_ID")
     protected FileDescriptor file;
 

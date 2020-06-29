@@ -8,7 +8,7 @@
                     view="categoria-view">
             <loader id="categoriasDl">
                 <query>
-                    <![CDATA[select e from jr_Categoria e]]>
+                    <![CDATA[select e from jr_Categoria e order by e.createTs desc]]>
                 </query>
             </loader>
         </collection>
@@ -42,19 +42,21 @@
                 </tree>
             </vbox>
             <vbox id="editBox" spacing="true" margin="true,false,false,true">
-                <scrollBox id="fieldGroupBox">
+                <hbox id="fieldGroupBox">
                     <form id="form" dataContainer="categoriaDc">
-                        <column width="250px">
+                        <column>
                             <checkBox id="isPadre" caption="Categoria Padre" enable="false" align="BOTTOM_LEFT"/>
-                            <textField id="nomeField" property="nome" enable="false"/>
+                            <textField id="nomeField" property="nome" enable="false" width="150px"/>
                             <hbox spacing="true" caption="Padre ">
                                 <label id="padreField"/>
                             </hbox>
                         </column>
                     </form>
-                </scrollBox>
+                </hbox>
                 <hbox id="actionsPane" spacing="true" visible="false">
                     <button id="saveBtn" caption="Salva" stylename="primary" invoke="onSaveBtnClick" enable="false"/>
+                    <button id="saveAndCloseBtn" caption="Salva e Chiudi" enable="false"
+                            invoke="onSaveAndCloseBtnClick"/>
                     <button id="cancelBtn" caption="Indietro" invoke="onCancelBtnClick"/>
                 </hbox>
             </vbox>

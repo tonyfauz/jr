@@ -16,7 +16,7 @@ public class Report extends StandardEntity {
     @Column(name = "NOME")
     protected String nome;
 
-    @Lookup(type = LookupType.DROPDOWN, actions = {})
+    @Lookup(type = LookupType.DROPDOWN, actions = {"lookup", "clear"})
     @OnDeleteInverse(DeletePolicy.DENY)
     @OnDelete(DeletePolicy.UNLINK)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,7 +42,7 @@ public class Report extends StandardEntity {
     @Column(name = "PARAMS", length = 500)
     protected String params;
 
-    @OnDeleteInverse(DeletePolicy.CASCADE)
+    @OnDeleteInverse(DeletePolicy.UNLINK)
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "report")
     protected List<ReportFile> files;
