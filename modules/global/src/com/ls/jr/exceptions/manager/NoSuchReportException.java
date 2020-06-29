@@ -9,4 +9,7 @@ public class NoSuchReportException extends Exception {
     public NoSuchReportException(String message, Throwable cause) {
         super(message, cause);
     }
+    public NoSuchReportException(String message) {
+        super(message);
+    }
 }

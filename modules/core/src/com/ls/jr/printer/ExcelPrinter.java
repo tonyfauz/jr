@@ -1,12 +1,5 @@
 package com.ls.jr.printer;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.FileStorageAPI;
-import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FileStorageException;
 import com.ls.jr.entity.Report;
 import com.ls.jr.exceptions.report.PrintFailedException;
 import net.sf.jasperreports.engine.*;
@@ -18,12 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 
-public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
+public class ExcelPrinter extends GeneralPrinter implements Printer {
 
 
     private static final Logger log = LoggerFactory.getLogger(ExcelPrinter.class);
@@ -47,8 +39,16 @@ public class ExcelPrinter extends GeneralPrinter implements ReportPrinter {
 
             if(c != null ) {
 
-                JasperReport jasperReport = loadJasperReport(report.getFile());
-                JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters,c);
+                JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
+                List<JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
+
+                if(subJasperReport!=null && !subJasperReport.isEmpty()){
+                    for(JasperReport subJasper : subJasperReport){
+                        parameters.put(subJasper.getName(),subJasper);
+                    }
+                }
+                JasperPrint jasperPrint = getJasperPrint(mainJasperReport, (HashMap) parameters, c);
+
                 bytes = exportXlsxToByteArray(jasperPrint);
 
             }else

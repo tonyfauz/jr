@@ -32,8 +32,7 @@
                 <textField id="nomeField" property="nome"/>
                 <lookupPickerField id="categoriaField" optionsContainer="categoriasDc" property="categoria"/>
                 <lookupField id="tipoField" property="tipo"/>
-                <upload id="fileField" fileStoragePutMode="IMMEDIATE" property="file"
-                        showFileName="true"/>
+                <upload id="fileField" fileStoragePutMode="IMMEDIATE" property="file" showFileName="true"/>
                 <dateField id="validoDaField" property="validoDa"/>
                 <dateField id="validoFinoField" property="validoFino"/>
                 <textField id="storeField" property="store"/>

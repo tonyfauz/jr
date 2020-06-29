@@ -6,6 +6,7 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "JR_REPORT")
 @Entity(name = "jr_Report")
@@ -40,6 +41,19 @@ public class Report extends StandardEntity {
 
     @Column(name = "PARAMS", length = 500)
     protected String params;
+
+    @OnDeleteInverse(DeletePolicy.CASCADE)
+    @OnDelete(DeletePolicy.CASCADE)
+    @OneToMany(mappedBy = "report")
+    protected List<ReportFile> files;
+
+    public List<ReportFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<ReportFile> files) {
+        this.files = files;
+    }
 
     public LocalDateTime getValidoDa() {
         return validoDa;

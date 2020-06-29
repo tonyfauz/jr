@@ -22,10 +22,10 @@ public class ReportFile extends StandardEntity {
     @JoinColumn(name = "REPORT_ID")
     protected Report report;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @Lookup(type = LookupType.DROPDOWN, actions = {})
     @OnDeleteInverse(DeletePolicy.DENY)
     @OnDelete(DeletePolicy.UNLINK)
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FILE_ID")
     protected FileDescriptor file;
 

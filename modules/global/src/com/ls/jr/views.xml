@@ -7,10 +7,9 @@
     </view>
     <view entity="jr_Report" name="report-view" extends="_local">
         <property name="categoria" view="_minimal">
-            <property name="nome"/>
             <property name="padre" view="_local"/>
         </property>
-        <property name="file" view="_minimal"/>
+        <property name="files" fetch="AUTO" view="_local"/>
     </view>
     <view entity="jr_ReportFile" name="reportFile-view" extends="_local">
         <property name="report" view="_local">

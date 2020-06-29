@@ -6,8 +6,11 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.ls.jr.entity.ReportFile;
+import com.ls.jr.exceptions.manager.NoSuchReportException;
 import com.ls.jr.exceptions.report.PrintFailedException;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -18,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class GeneralPrinter {
@@ -27,13 +32,30 @@ public class GeneralPrinter {
     static Locale locale = new Locale("it", "IT");
     Persistence persistence = AppBeans.get(Persistence.class);
 
-    public JasperReport loadJasperReport(FileDescriptor file) throws Exception {
-
+    public JasperReport loadMainJasperReport(List<ReportFile> files) throws Exception {
         FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
-        InputStream jasperReportIs = fileStorageAPI.openStream(file);
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperReportIs);
-        return jasperReport;
+        for ( ReportFile reportFile : files){
+            if(!reportFile.getSubReport()){
+                InputStream jasperReportIs = fileStorageAPI.openStream(reportFile.getFile());
+                JasperReport jasperReport = JasperCompileManager.compileReport(jasperReportIs);
+                return jasperReport;
+            }
+        }
+        throw new NoSuchReportException("Report principale non trovato");
     }
+    public List<JasperReport> loadSubJasperReport(List<ReportFile> files) throws Exception {
+        FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.class);
+        List<JasperReport> jasperReportList = new ArrayList<>();
+        for ( ReportFile reportFile : files){
+            if(reportFile.getSubReport()) {
+                InputStream jasperReportIs = fileStorageAPI.openStream(reportFile.getFile());
+                JasperReport jasperReport = JasperCompileManager.compileReport(jasperReportIs);
+                jasperReportList.add(jasperReport);
+            }
+        }
+         return jasperReportList;
+    }
+
     public JasperPrint getJasperPrint(JasperReport jasperReport, HashMap parameters, Connection c) throws JRException {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, c);
         return jasperPrint;

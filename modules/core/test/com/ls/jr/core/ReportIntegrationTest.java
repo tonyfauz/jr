@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.security.entity.User;
 import com.ls.jr.entity.Report;
+import com.ls.jr.entity.ReportFile;
 import com.ls.jr.entity.TipoExport;
 import com.ls.jr.exceptions.report.PrintFailedException;
 import com.ls.jr.service.ReportService;
@@ -17,10 +18,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ReportIntegrationTest {
 
@@ -33,6 +31,7 @@ public class ReportIntegrationTest {
     private static FileStorageAPI fileStorageAPI;
 
     private static FileDescriptor fdPdf;
+    private static FileDescriptor fdPdfsub;
     private static FileDescriptor fdExcel;
 
     private static ReportService reportService;
@@ -60,7 +59,16 @@ public class ReportIntegrationTest {
         fdPdf.setExtension("jrxml");
         fdPdf.setCreateDate(new Date());
         File file  = new File("C:\\Users\\Tony\\Documents\\workspaceCuba7\\jr\\modules\\core\\build\\test-home\\test-pdf.jrxml");
+
+        fdPdfsub = metadata.create(FileDescriptor.class);
+        fdPdfsub.setId(UUID.randomUUID());
+        fdPdfsub.setName("sub pdf");
+        fdPdfsub.setExtension("jrxml");
+        fdPdfsub.setCreateDate(new Date());
+        File file2  = new File("C:\\Users\\Tony\\Documents\\workspaceCuba7\\jr\\modules\\core\\build\\test-home\\Blank_A4_Landscape.jrxml");
+
         try {
+            fileStorageAPI.saveStream(fdPdfsub,new FileInputStream(file2));
             fileStorageAPI.saveStream(fdPdf,new FileInputStream(file));
         } catch (FileStorageException e) {
             e.printStackTrace();
@@ -92,18 +100,34 @@ public class ReportIntegrationTest {
     @Test
     public void testPrintPdf() {
         Report report = metadata.create(Report.class);
-        report.setFile(fdPdf);
+        List<ReportFile> files = new ArrayList<>();
+
+        ReportFile reportFile = metadata.create(ReportFile.class);
+        reportFile.setFile(fdPdf);
+        reportFile.setReport(report);
+        reportFile.setSubReport(false);
+
+        files.add(reportFile);
+
+        ReportFile reportFileSub = metadata.create(ReportFile.class);
+        reportFileSub.setFile(fdPdfsub);
+        reportFileSub.setReport(report);
+        reportFileSub.setSubReport(true);
+
+        files.add(reportFileSub);
+
+        report.setFiles(files);
         report.setNome("Test Pdf");
         report.setTipo(TipoExport.PDF);
          try {
         byte[] file =  reportService.printReport(report,new HashMap<>());
         File fcreated = new File("C:\\Users\\Tony\\Documents\\workspaceCuba7\\jr\\modules\\core\\build\\test-home\\testpdf.pdf");
-             FileOutputStream fileOutputStream = new FileOutputStream(fcreated);
-             fileOutputStream.write(file);
-             fileOutputStream.flush();
-             fileOutputStream.close();
 
-             Assertions.assertTrue(fcreated.exists());
+        FileOutputStream fileOutputStream = new FileOutputStream(fcreated);
+        fileOutputStream.write(file);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        Assertions.assertTrue(fcreated.exists());
 
         } catch (PrintFailedException e) {
             e.printStackTrace();
@@ -125,9 +149,18 @@ public class ReportIntegrationTest {
     public void testPrintExcel() {
 
         Report report = metadata.create(Report.class);
-        report.setFile(fdExcel);
+
+        List<ReportFile> files = new ArrayList<>();
+        ReportFile rf = metadata.create(ReportFile.class);
+        rf.setFile(fdExcel);
+        rf.setSubReport(false);
+        rf.setReport(report);
+        files.add(rf);
+        report.setFiles(files);
+
         report.setNome("Test Excel");
         report.setTipo(TipoExport.EXCEL);
+
         try {
             byte[] file =  reportService.printReport(report,new HashMap<>());
             File fcreated = new File("C:\\Users\\Tony\\Documents\\workspaceCuba7\\jr\\modules\\core\\build\\test-home\\testexcel.xlsx");
@@ -153,9 +186,50 @@ public class ReportIntegrationTest {
         }
 
     }
-    @Test
+   // @Test
     public void testByAlias() {
+        Report report = metadata.create(Report.class);
+        List<ReportFile> files = new ArrayList<>();
+        ReportFile rf = metadata.create(ReportFile.class);
+        rf.setFile(fdExcel);
+        rf.setSubReport(false);
+        rf.setReport(report);
 
+        report.setFiles(files);
+        report.setNome("Test Excel");
+        report.setAlias("aliasExcel");
+        report.setTipo(TipoExport.EXCEL);
+
+        CommitContext commitContext = new CommitContext();
+        commitContext.addInstanceToCommit(fdExcel);
+        commitContext.addInstanceToCommit(report);
+        dataManager.commit(commitContext);
+
+        try {
+            byte[] file =  reportService.printCurrentReportFromAlias("aliasExcel",new HashMap<>());
+            File fcreated = new File("C:\\Users\\Tony\\Documents\\workspaceCuba7\\jr\\modules\\core\\build\\test-home\\testexcelAlias.xlsx");
+            FileOutputStream fileOutputStream = new FileOutputStream(fcreated);
+            fileOutputStream.write(file);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+
+            Assertions.assertTrue(fcreated.exists());
+
+        } catch (PrintFailedException e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        } catch (FileStorageException e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        }finally {
+            dataManager.remove(report);
+        }
     }
 
 

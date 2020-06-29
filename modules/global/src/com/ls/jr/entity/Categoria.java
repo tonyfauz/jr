@@ -3,13 +3,11 @@ package com.ls.jr.entity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.HasUuid;
-import com.haulmont.cuba.core.entity.annotation.CaseConversion;
-import com.haulmont.cuba.core.entity.annotation.Lookup;
-import com.haulmont.cuba.core.entity.annotation.LookupType;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @NamePattern("%s|nome")
@@ -21,6 +19,9 @@ public class Categoria extends BaseLongIdEntity implements HasUuid {
     @Column(name = "UUID")
     protected UUID uuid;
 
+    @Column(name = "TEST")
+    protected BigDecimal test;
+
     @CaseConversion
     @Column(name = "NOME")
     protected String nome;
@@ -30,6 +31,14 @@ public class Categoria extends BaseLongIdEntity implements HasUuid {
     @OnDeleteInverse(DeletePolicy.DENY)
     @JoinColumn(name = "PADRE_ID")
     protected Categoria padre;
+
+    public BigDecimal getTest() {
+        return test;
+    }
+
+    public void setTest(BigDecimal test) {
+        this.test = test;
+    }
 
     public Categoria getPadre() {
         return padre;

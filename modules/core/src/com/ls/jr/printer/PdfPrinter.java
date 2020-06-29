@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
 
 
-public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
+public class PdfPrinter extends GeneralPrinter implements Printer {
 
     private static final Logger log = LoggerFactory.getLogger(PdfPrinter.class);
 
@@ -35,9 +36,15 @@ public class PdfPrinter extends GeneralPrinter implements ReportPrinter {
             Connection c = getDbConnection(report.getStore());
 
             if (c != null) {
+                JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
+                List<JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
 
-                JasperReport jasperReport = loadJasperReport(report.getFile());
-                JasperPrint jasperPrint = getJasperPrint(jasperReport, (HashMap) parameters, c);
+                if(subJasperReport!=null && !subJasperReport.isEmpty()){
+                    for(JasperReport subJasper : subJasperReport){
+                        parameters.put(subJasper.getName(),subJasper);
+                    }
+                }
+                JasperPrint jasperPrint = getJasperPrint(mainJasperReport, (HashMap) parameters, c);
                 bytes = exportPdfToByteArray(jasperPrint);
 
 

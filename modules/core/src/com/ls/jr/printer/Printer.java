@@ -6,7 +6,7 @@ import com.ls.jr.exceptions.report.PrintFailedException;
 
 import java.util.HashMap;
 
-public interface ReportPrinter {
+public interface Printer {
 
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException, FileStorageException;
 }
