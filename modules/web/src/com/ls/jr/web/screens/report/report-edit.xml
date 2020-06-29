@@ -26,7 +26,7 @@
     </data>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="editActions" spacing="true">
+    <layout expand="associaFileAction" spacing="true">
         <form id="form" dataContainer="reportDc">
             <column>
                 <textField id="nomeField" property="nome" align="MIDDLE_LEFT" required="true"
@@ -50,11 +50,13 @@
                 <dateField id="validoFinoField" property="validoFino"/>
             </column>
         </form>
+
         <hbox id="editActions" spacing="true">
             <button id="saveAction" action="windowCommit" stylename="primary" icon="SAVE"/>
             <button action="windowClose"/>
+
         </hbox>
-        <vbox spacing="true">
+        <vbox id="associaFileAction" spacing="true">
             <button id="btnUploadFile" caption="Associa File" invoke="onBtnUploadFileClick" visible="false"
                     stylename="friendly"/>
         </vbox>
