@@ -23,5 +23,6 @@ public interface ReportManagerService {
     public void deleteReportFile(ReportFile reportFile) throws DeleteReportFileException;
 
     public boolean checkIfReportMasterExists(Report selectedReport);
+    public boolean checkIfLogoReportExists(Report selectedReport);
 
 }

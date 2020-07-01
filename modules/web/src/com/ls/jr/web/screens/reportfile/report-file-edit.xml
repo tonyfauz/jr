@@ -30,15 +30,21 @@
         <form id="form" dataContainer="reportFileDc" width="100%">
             <column>
                 <hbox spacing="true" align="MIDDLE_LEFT">
-                    <label value="Report"/>
+                    <label value="Report: "/>
                     <label id="focusedReport" dataContainer="reportFileDc" property="report.nome"/>
                 </hbox>
                 <hbox spacing="true">
                     <checkBox id="subReportField" property="subReport" caption="Sub Report"
                               dataContainer="reportFileDc"/>
+                    <checkBox id="logoField" caption="Logo" dataContainer="reportFileDc" property="logo"/>
                 </hbox>
                 <!--<lookupField id="reportField" optionsContainer="reportsDc" property="report"
                              captionProperty="nome"/>-->
+                <hbox spacing="true">
+                    <label id="lbParameter" value="Nome Parametro" align="MIDDLE_LEFT"/>
+                    <textField id="parameterField" dataContainer="reportFileDc" property="nomeParametro"
+                               align="MIDDLE_LEFT"/>
+                </hbox>
                 <vbox height="150px" spacing="true" stylename="dropzone-container" id="dropZone"
                       margin="false,true,true,false" width="98%">
                     <label stylename="dropzone-description"
@@ -56,7 +62,8 @@
             </column>
         </form>
         <hbox id="editActions" spacing="true">
-            <button id="btnSaveFile" caption="Salva file" stylename="primary" invoke="onBtnSaveFileClick"/>
+            <button id="btnSaveFile" caption="Salva file" stylename="primary" invoke="onBtnSaveFileClick"
+            />
             <button action="windowClose"/>
         </hbox>
     </layout>

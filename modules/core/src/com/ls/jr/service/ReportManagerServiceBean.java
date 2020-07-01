@@ -126,5 +126,16 @@ public class ReportManagerServiceBean implements ReportManagerService {
         return false;
     }
 
+    @Override
+    public boolean checkIfLogoReportExists(Report selectedReport) {
+        LoadContext<ReportFile> ldc = LoadContext.create(ReportFile.class)
+                .setQuery(LoadContext.createQuery("select e from jr_ReportFile e where e.report = :myReport and e.logo = true")
+                        .setParameter("myReport", selectedReport));
+        List<ReportFile> listLogoReport = dataManager.loadList(ldc);
+        if (listLogoReport.size() >= 1) {
+            return true;
+        }
+        return false;
+    }
 
 }

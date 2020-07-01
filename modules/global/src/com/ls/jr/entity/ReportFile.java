@@ -22,6 +22,12 @@ public class ReportFile extends StandardEntity {
     @JoinColumn(name = "REPORT_ID")
     protected Report report;
 
+    @Column(name = "LOGO")
+    protected Boolean logo;
+
+    @Column(name = "NOME_PARAMETRO")
+    protected String nomeParametro;
+
     @Lookup(type = LookupType.DROPDOWN, actions = {})
     @OnDeleteInverse(DeletePolicy.CASCADE)
     @OnDelete(DeletePolicy.CASCADE)
@@ -31,6 +37,22 @@ public class ReportFile extends StandardEntity {
 
     @Column(name = "SUB_REPORT")
     protected Boolean subReport;
+
+    public String getNomeParametro() {
+        return nomeParametro;
+    }
+
+    public void setNomeParametro(String nomeParametro) {
+        this.nomeParametro = nomeParametro;
+    }
+
+    public Boolean getLogo() {
+        return logo;
+    }
+
+    public void setLogo(Boolean logo) {
+        this.logo = logo;
+    }
 
     public Boolean getSubReport() {
         return subReport;

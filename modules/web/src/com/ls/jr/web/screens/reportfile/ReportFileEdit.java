@@ -1,5 +1,6 @@
 package com.ls.jr.web.screens.reportfile;
 
+import com.google.common.collect.Sets;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.gui.Notifications;
@@ -14,6 +15,8 @@ import com.ls.jr.service.ReportManagerService;
 import javax.inject.Inject;
 import java.util.Set;
 
+import static com.haulmont.cuba.gui.Notifications.DELAY_DEFAULT;
+
 @UiController("jr_ReportFile.edit")
 @UiDescriptor("report-file-edit.xml")
 @EditedEntityContainer("reportFileDc")
@@ -25,12 +28,30 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
     @Inject
     private CheckBox subReportField;
     @Inject
+    private CheckBox logoField;
+    @Inject
+    private TextField<String> parameterField;
+    @Inject
+    private FileUploadField fileField;
+    @Inject
     private Label<String> focusedReport;
     @Inject
     private ReportManagerService reportManagerService;
     @Inject
     private InstanceContainer<ReportFile> reportFileDc;
+
+    /*@Inject
+    private Utils utils;*/
+
     private Report selectedReport;
+
+    public Notifications.NotificationBuilder createNotification(Notifications.NotificationType notificationType, String notificationCaption, String notificationDescription, Integer notificationHideDelayMs) {
+        return notifications.create()
+                .withType(notificationType)
+                .withCaption(notificationCaption)
+                .withDescription(notificationDescription)
+                .withHideDelayMs(notificationHideDelayMs);
+    }
 
     public void setEditReportFile(Report report) {
         selectedReport = report;
@@ -42,44 +63,85 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
         getEditedEntity().setReport(selectedReport); //al fine di salvare il report associato a reportfile
     }
 
+    @Subscribe("logoField")
+    public void onLogoFieldValueChange(HasValue.ValueChangeEvent<Boolean> event) {
+
+        if (event.getValue().equals(true)) {
+            fileField.setPermittedExtensions(Sets.newHashSet(".png", ".jpg"));
+            subReportField.setValue(false);
+            parameterField.setRequired(true);
+            parameterField.setRequiredMessage("Campo Obbligatorio!");
+        } else {
+            fileField.setPermittedExtensions(Sets.newHashSet(".jrxml"));
+            parameterField.setRequired(false);
+        }
+    }
+
+    @Subscribe("subReportField")
+    public void onSubReportFieldValueChange(HasValue.ValueChangeEvent<Boolean> event) {
+        if (event.getValue().equals(true)) {
+            logoField.setValue(false);
+            parameterField.setRequired(true);
+            parameterField.setRequiredMessage("Campo Obbligatorio!");
+        } else {
+            parameterField.setRequired(false);
+        }
+    }
+
+
     @Subscribe("fileField")
     public void onFileFieldFileUploadSucceed(FileUploadField.FileUploadSucceedEvent event) {
-        notifications.create()
-                .withType(Notifications.NotificationType.HUMANIZED)
-                .withCaption("CARICAMENTO COMPLETATO")
-                .withHideDelayMs(50)
-                .show();
+        createNotification(Notifications.NotificationType.HUMANIZED,
+                "CARICAMENTO COMPLETATO",
+                "",
+                50).show();
     }
 
     @Subscribe("fileField")
     public void onFileFieldFileUploadError(UploadField.FileUploadErrorEvent event) {
-        notifications.create()
-                .withType(Notifications.NotificationType.ERROR)
-                .withCaption("ATTENZIONE")
-                .withDescription("Il file non è stato caricato correttamente")
-                .show();
+        createNotification(Notifications.NotificationType.ERROR,
+                "ATTENZIONE",
+                "Il file non è stato caricato correttamente",
+                DELAY_DEFAULT).show();
     }
 
     public void onBtnSaveFileClick() {
         ReportFile myReportFile = reportFileDc.getItem();
         if (myReportFile != null) {
-            boolean myRes = reportManagerService.checkIfReportMasterExists(selectedReport);
-            if (!myRes || (myRes && subReportField.isChecked())) {
-                try {
-                    closeWithCommit();
-                } catch (SaveReportFileException saveException) {
-                    notifications.create()
-                            .withType(Notifications.NotificationType.ERROR)
-                            .withCaption("ATTENZIONE")
-                            .withDescription("E' già presente un file master associato al report. Inserire il file come sub report.")
-                            .show();
+            boolean reportMasterExists = reportManagerService.checkIfReportMasterExists(selectedReport);
+            boolean reportLogoExists = reportManagerService.checkIfLogoReportExists(selectedReport);
+            if (logoField.isChecked()) {
+                if (!reportLogoExists) {
+                    try {
+                        closeWithCommit();
+                    } catch (SaveReportFileException saveException) {
+                        createNotification(Notifications.NotificationType.ERROR,
+                                "ATTENZIONE",
+                                "Il salvataggio non è andato a buon fine.",
+                                DELAY_DEFAULT).show();
+                    }
+                } else {
+                    createNotification(Notifications.NotificationType.ERROR,
+                            "ATTENZIONE",
+                            "Il logo associato al report è stato caricato.",
+                            DELAY_DEFAULT).show();
                 }
             } else {
-                notifications.create()
-                        .withType(Notifications.NotificationType.ERROR)
-                        .withCaption("ATTENZIONE")
-                        .withDescription("E' già presente un file master associato al report. Inserire il file come sub report.")
-                        .show();
+                if (!reportMasterExists || (reportMasterExists && subReportField.isChecked())) {
+                    try {
+                        closeWithCommit();
+                    } catch (SaveReportFileException saveException) {
+                        createNotification(Notifications.NotificationType.ERROR,
+                                "ATTENZIONE",
+                                "Il salvataggio non è andato a buon fine.",
+                                DELAY_DEFAULT).show();
+                    }
+                } else {
+                    createNotification(Notifications.NotificationType.ERROR,
+                            "ATTENZIONE",
+                            "E' già presente un file master associato al report. Inserire il file come sub report.",
+                            DELAY_DEFAULT).show();
+                }
             }
         }
     }

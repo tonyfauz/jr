@@ -48,6 +48,8 @@ create table JR_REPORT_FILE (
     DELETED_BY varchar(50),
     --
     REPORT_ID uuid,
+    LOGO boolean,
+    NOME_PARAMETRO varchar(255),
     FILE_ID uuid,
     SUB_REPORT boolean,
     --
