@@ -22,32 +22,11 @@ public class PdfPrinter extends GeneralPrinter implements Printer {
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException {
 
         byte[] bytes = null;
-        java.util.Map parameters = new java.util.HashMap();
-
-        parameters.put(JRParameter.REPORT_LOCALE, locale);
-        parameters.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
-
-        params.forEach((key, value) -> {
-            parameters.put(key, value);
-        });
-
         try {
-
             Connection c = getDbConnection(report.getStore());
-
             if (c != null) {
-                JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
-                List<JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
-
-                if(subJasperReport!=null && !subJasperReport.isEmpty()){
-                    for(JasperReport subJasper : subJasperReport){
-                        parameters.put(subJasper.getName(),subJasper);
-                    }
-                }
-                JasperPrint jasperPrint = getJasperPrint(mainJasperReport, (HashMap) parameters, c);
-                bytes = exportPdfToByteArray(jasperPrint);
-
-
+                JasperPrint jp = loadJasperPrint(report,params,c);
+                bytes = exportPdfToByteArray(jp);
             } else
                 throw new PrintFailedException("Connessione al db non riuscita");
 
@@ -61,4 +40,6 @@ public class PdfPrinter extends GeneralPrinter implements Printer {
     private byte[] exportPdfToByteArray(JasperPrint jasperPrint) throws JRException {
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
+
+
 }
