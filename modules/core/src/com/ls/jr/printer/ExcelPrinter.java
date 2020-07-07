@@ -10,10 +10,12 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExcelPrinter extends GeneralPrinter implements Printer {
 
@@ -25,31 +27,12 @@ public class ExcelPrinter extends GeneralPrinter implements Printer {
 
 
         byte[] bytes = null;
-        java.util.Map parameters = new java.util.HashMap();
-
-        parameters.put(JRParameter.REPORT_LOCALE, locale);
-        parameters.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
-        params.forEach( (key,value) ->{
-            parameters.put(key,value);
-        });
-
         try {
-
             Connection c = getDbConnection(report.getStore());
-
             if(c != null ) {
 
-                JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
-                List<JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
-
-                if(subJasperReport!=null && !subJasperReport.isEmpty()){
-                    for(JasperReport subJasper : subJasperReport){
-                        parameters.put(subJasper.getName(),subJasper);
-                    }
-                }
-                JasperPrint jasperPrint = getJasperPrint(mainJasperReport, (HashMap) parameters, c);
-
-                bytes = exportXlsxToByteArray(jasperPrint);
+               JasperPrint jp = loadJasperPrint(report,params,c);
+               bytes = exportXlsxToByteArray(jp);
 
             }else
                 throw  new PrintFailedException("Connessione al db non riuscita");

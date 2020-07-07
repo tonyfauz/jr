@@ -111,6 +111,7 @@ public class ReportIntegrationTest {
 
         ReportFile reportFileSub = metadata.create(ReportFile.class);
         reportFileSub.setFile(fdPdfsub);
+        reportFileSub.setNomeParametro("test_parametro");
         reportFileSub.setReport(report);
         reportFileSub.setSubReport(true);
 
