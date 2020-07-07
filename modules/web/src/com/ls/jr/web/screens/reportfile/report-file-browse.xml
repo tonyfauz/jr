@@ -33,7 +33,7 @@
             </actions>
             <columns>
                 <!--<column id="report.nome"/>-->
-                <column id="file.name"/>
+                <column id="file.name" caption="Nome Allegato"/>
                 <column id="subReport"/>
                 <column id="logo"/>
                 <column id="nomeParametro"/>

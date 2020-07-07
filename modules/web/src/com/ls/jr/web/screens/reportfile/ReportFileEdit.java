@@ -45,7 +45,10 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
 
     private Report selectedReport;
 
-    public Notifications.NotificationBuilder createNotification(Notifications.NotificationType notificationType, String notificationCaption, String notificationDescription, Integer notificationHideDelayMs) {
+    public Notifications.NotificationBuilder createNotification(Notifications.NotificationType notificationType,
+                                                                String notificationCaption,
+                                                                String notificationDescription,
+                                                                Integer notificationHideDelayMs) {
         return notifications.create()
                 .withType(notificationType)
                 .withCaption(notificationCaption)
@@ -63,6 +66,14 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
         getEditedEntity().setReport(selectedReport); //al fine di salvare il report associato a reportfile
     }
 
+    public void checkExtensionFile(String loadedExtension) {
+        if(logoField.isChecked()) {
+            if(loadedExtension != null && (loadedExtension != ".png" || loadedExtension != ".jpg")) {
+                fileField.setValue(null);
+            }
+        }
+    }
+
     @Subscribe("logoField")
     public void onLogoFieldValueChange(HasValue.ValueChangeEvent<Boolean> event) {
 
@@ -71,6 +82,10 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
             subReportField.setValue(false);
             parameterField.setRequired(true);
             parameterField.setRequiredMessage("Campo Obbligatorio!");
+            if(fileField.getValue() != null) {
+                String loadedExtension = fileField.getValue().getExtension();
+                checkExtensionFile(loadedExtension);
+            }
         } else {
             fileField.setPermittedExtensions(Sets.newHashSet(".jrxml"));
             parameterField.setRequired(false);
@@ -83,6 +98,10 @@ public class ReportFileEdit extends StandardEditor<ReportFile> {
             logoField.setValue(false);
             parameterField.setRequired(true);
             parameterField.setRequiredMessage("Campo Obbligatorio!");
+            if(fileField.getValue() != null) {
+                String loadedExtension = fileField.getValue().getExtension();
+                checkExtensionFile(loadedExtension);
+            }
         } else {
             parameterField.setRequired(false);
         }

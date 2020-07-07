@@ -90,19 +90,22 @@ public class ReportManagerServiceBean implements ReportManagerService {
     public void deleteReportFile(ReportFile reportFileToRemove) throws DeleteReportFileException {
         if(reportFileToRemove != null) {
             Boolean subReport = reportFileToRemove.getSubReport();
-            if((subReport==null || !subReport) ) { //se è master report
-                LoadContext<ReportFile> ldc = LoadContext.create(ReportFile.class)
-                        .setQuery(LoadContext.createQuery("select e from jr_ReportFile e where e.report = :myReport and e.subReport = true")
-                        .setParameter("myReport", reportFileToRemove.getReport()));
-                List<ReportFile> listSubReport = dataManager.loadList(ldc);
-                if (listSubReport.size() == 0) { //controllo che non abbia subreport
-                    try {
-                        dataManager.remove(reportFileToRemove);
-                    } catch (Exception rfException){
-                        throw new DeleteReportFileException("Non è consentito eliminare questo ReportFile", rfException);
+            Boolean logo = reportFileToRemove.getLogo();
+            if (logo == null || !logo) {
+                if (subReport==null || !subReport) { //se è master report
+                    LoadContext<ReportFile> ldc = LoadContext.create(ReportFile.class)
+                            .setQuery(LoadContext.createQuery("select e from jr_ReportFile e where e.report = :myReport and e.subReport = true")
+                                    .setParameter("myReport", reportFileToRemove.getReport()));
+                    List<ReportFile> listSubReport = dataManager.loadList(ldc);
+                    if (listSubReport.size() == 0) { //controllo che non abbia subreport
+                        try {
+                            dataManager.remove(reportFileToRemove);
+                        } catch (Exception rfException){
+                            throw new DeleteReportFileException("Non è consentito eliminare questo ReportFile", rfException);
+                        }
+                    } else {
+                        throw new DeleteReportFileException("Non è consentito eliminare file master se ci sono subReport");
                     }
-                } else {
-                    throw new DeleteReportFileException("Non è consentito eliminare file master se ci sono subReport");
                 }
             } else {
                 try {
