@@ -32,6 +32,7 @@ create table JR_REPORT (
     ALIAS varchar(255),
     STORE varchar(255),
     PARAMS varchar(500),
+    TIPO_DATA_SOURCE integer,
     --
     primary key (ID)
 )^

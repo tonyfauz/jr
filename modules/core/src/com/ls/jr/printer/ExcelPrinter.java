@@ -1,6 +1,7 @@
 package com.ls.jr.printer;
 
 import com.ls.jr.entity.Report;
+import com.ls.jr.entity.TipoDataSource;
 import com.ls.jr.exceptions.report.PrintFailedException;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -27,19 +28,22 @@ public class ExcelPrinter extends GeneralPrinter implements Printer {
 
 
         byte[] bytes = null;
+        JasperPrint jp= null;
         try {
-            Connection c = getDbConnection(report.getStore());
-            if(c != null ) {
-
-               JasperPrint jp = loadJasperPrint(report,params,c);
-               bytes = exportXlsxToByteArray(jp);
-
-            }else
-                throw  new PrintFailedException("Connessione al db non riuscita");
+            if(report.getTipoDataSource() == null || report.getTipoDataSource().equals(TipoDataSource.CONNESSIONE_JDBC)){
+                Connection c = getDbConnection(report.getStore());
+                if (c != null) {
+                    jp = loadJasperPrint(report,params,c);
+                } else
+                    throw new PrintFailedException("Connessione al db non riuscita");
+            } else if(report.getTipoDataSource().equals(TipoDataSource.JAVA_BEANS)){
+                jp = loadJasperPrintPerJBDataSource(report, params);
+            }
+            bytes = exportXlsxToByteArray(jp);
 
         } catch (Exception e) {
-            log.debug(e.getMessage(),e);
-            throw  new PrintFailedException("Errore durante la stampa del report",e);
+            log.debug(e.getMessage(), e);
+            throw new PrintFailedException("Errore durante la stampa del report", e);
         }
         return bytes;
     }

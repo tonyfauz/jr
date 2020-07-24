@@ -2,6 +2,7 @@ package com.ls.jr.printer;
 
 
 import com.ls.jr.entity.Report;
+import com.ls.jr.entity.TipoDataSource;
 import com.ls.jr.exceptions.report.PrintFailedException;
 
 import net.sf.jasperreports.engine.*;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class PdfPrinter extends GeneralPrinter implements Printer {
@@ -22,13 +22,18 @@ public class PdfPrinter extends GeneralPrinter implements Printer {
     public byte[] printReport(Report report, HashMap<String, Object> params) throws PrintFailedException {
 
         byte[] bytes = null;
+        JasperPrint jp= null;
         try {
-            Connection c = getDbConnection(report.getStore());
-            if (c != null) {
-                JasperPrint jp = loadJasperPrint(report,params,c);
-                bytes = exportPdfToByteArray(jp);
-            } else
-                throw new PrintFailedException("Connessione al db non riuscita");
+            if(report.getTipoDataSource() == null || report.getTipoDataSource().equals(TipoDataSource.CONNESSIONE_JDBC)){
+                Connection c = getDbConnection(report.getStore());
+                if (c != null) {
+                    jp = loadJasperPrint(report,params,c);
+                } else
+                    throw new PrintFailedException("Connessione al db non riuscita");
+            } else if(report.getTipoDataSource().equals(TipoDataSource.JAVA_BEANS)){
+                jp = loadJasperPrintPerJBDataSource(report, params);
+            }
+            bytes = exportPdfToByteArray(jp);
 
         } catch (Exception e) {
             log.debug(e.getMessage(), e);

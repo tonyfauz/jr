@@ -35,6 +35,9 @@
                              requiredMessage="Campo Obbligatorio!"/>
                 <lookupField id="tipoField" property="tipo" required="true" requiredMessage="Campo Obbligatorio!"/>
                 <dateField id="validoDaField" property="validoDa"/>
+                <lookupField id="tipoDataSourceField" caption="Data Source" property="tipoDataSource"
+                             optionsEnum="com.ls.jr.entity.TipoDataSource" required="true"
+                             requiredMessage="Specificare il tipo di Data Source"/>
                 <textArea id="paramsField" property="params"/>
                 <vbox spacing="true" caption="         ">
                     <label value="N.B. Inserire i parametri  separati dal &quot; ; &quot;."/>

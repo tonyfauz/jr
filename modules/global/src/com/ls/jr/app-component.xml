@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               dependsOn="it.nexbit.cuba.translationit, com.haulmont.cuba">
+
+    <module name="global" blocks="*">
+        <artifact name="jrmanager-global" appJar="true"/>
+
+        <property name="cuba.persistenceConfig" value="+com/ls/jr/persistence.xml"/>
+        <property name="cuba.metadataConfig" value="+com/ls/jr/metadata.xml"/>
+        <property name="cuba.viewsConfig" value="+com/ls/jr/views.xml"/>
+    </module>
+    <module name="core" dependsOn="global" blocks="core">
+        <artifact name="jrmanager-core" appJar="true"/>
+        <artifact name="jrmanager-core" classifier="db" ext="zip" configuration="dbscripts"/>
+
+        <property name="cuba.springContextConfig" value="+com/ls/jr/spring.xml"/>
+        <property name="cuba.mainMessagePack" value="+com.ls.jr.core"/>
+    </module>
+    <module name="web" dependsOn="global" blocks="web">
+        <artifact name="jrmanager-web" appJar="true"/>
+        <artifact name="jrmanager-web" classifier="web" ext="zip" configuration="webcontent"/>
+
+        <property name="cuba.springContextConfig" value="+com/ls/jr/web-spring.xml"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="+com/ls/jr/web-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig" value="+com/ls/jr/web-screens.xml"/>
+        <property name="cuba.menuConfig" value="+com/ls/jr/web-menu.xml"/>
+        <property name="cuba.permissionConfig" value="+com/ls/jr/web-permissions.xml"/>
+        <property name="cuba.mainMessagePack" value="+com.ls.jr.web"/>
+    </module>
+</app-component>

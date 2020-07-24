@@ -42,10 +42,21 @@ public class Report extends StandardEntity {
     @Column(name = "PARAMS", length = 500)
     protected String params;
 
+    @Column(name = "TIPO_DATA_SOURCE")
+    protected Integer tipoDataSource;
+
     @OnDeleteInverse(DeletePolicy.UNLINK)
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "report")
     protected List<ReportFile> files;
+
+    public TipoDataSource getTipoDataSource() {
+        return tipoDataSource == null ? null : TipoDataSource.fromId(tipoDataSource);
+    }
+
+    public void setTipoDataSource(TipoDataSource tipoDataSource) {
+        this.tipoDataSource = tipoDataSource == null ? null : tipoDataSource.getId();
+    }
 
     public List<ReportFile> getFiles() {
         return files;

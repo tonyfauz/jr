@@ -41,6 +41,7 @@ public class GeneralPrinter {
         params.forEach( (key,value) ->{
             parameters.put(key,value);
         });
+
         try {
             JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
             Map<String, JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
@@ -57,6 +58,39 @@ public class GeneralPrinter {
                 });
             }
            jasperPrint = getJasperPrint(mainJasperReport, (HashMap) parameters, c);
+        }catch (Exception e ){
+            log.debug(e.getMessage(),e);
+            throw  new PrintFailedException("Errore durante la stampa del report",e);
+        }
+        return  jasperPrint;
+    }
+
+    public JasperPrint loadJasperPrintPerJBDataSource(Report report, HashMap<String, Object> params) throws PrintFailedException {
+        JasperPrint jasperPrint = null;
+        java.util.Map parameters = new java.util.HashMap();
+
+        parameters.put(JRParameter.REPORT_LOCALE, locale);
+        parameters.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
+        params.forEach( (key,value) ->{
+            parameters.put(key,value);
+        });
+
+        try {
+            JasperReport mainJasperReport = loadMainJasperReport(report.getFiles());
+            Map<String, JasperReport> subJasperReport = loadSubJasperReport(report.getFiles());
+            Map<String, BufferedImage> image = loadImage(report.getFiles());
+
+            if (subJasperReport != null && !subJasperReport.isEmpty()) {
+                subJasperReport.entrySet().forEach(stringJasperReportEntry -> {
+                    parameters.put(stringJasperReportEntry.getKey(), stringJasperReportEntry.getValue());
+                });
+            }
+            if (image != null && !image.isEmpty()) {
+                image.entrySet().forEach(stringBufferedImageEntry -> {
+                    parameters.put(stringBufferedImageEntry.getKey(), stringBufferedImageEntry.getValue());
+                });
+            }
+            jasperPrint = getJasperPrintEmpyDataSource(mainJasperReport, (HashMap) parameters);
         }catch (Exception e ){
             log.debug(e.getMessage(),e);
             throw  new PrintFailedException("Errore durante la stampa del report",e);
@@ -104,19 +138,21 @@ public class GeneralPrinter {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, c);
         return jasperPrint;
     }
+    public JasperPrint getJasperPrintEmpyDataSource(JasperReport jasperReport, HashMap parameters ) throws JRException {
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
+        return jasperPrint;
+    }
     public Connection getDbConnection(String store) throws PrintFailedException {
         Transaction tx;
         EntityManager entityManager;
-        if(store!= null &&  store != "") {
 
+        if(store!= null &&  store != "") {
             tx = persistence.createTransaction(store);
             entityManager = persistence.getEntityManager(store);
-
         }else{
             tx = persistence.createTransaction();
             entityManager = persistence.getEntityManager();
         }
-
         if(tx==null || entityManager==null)
             throw new PrintFailedException("Errore durante la creazione della tranzazione, store:"+store);
 
